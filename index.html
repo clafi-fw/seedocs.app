@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>SeeDocs - a code documentation tool</title>
+    <meta name="description" content="A code documentation tool for C++ and Delphi sources, for Windows and Linux.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://seedocs.app/">
+    <meta property="og:title" content="SeeDocs">
+    <meta property="og:description" content="A code documentation tool for C++ and Delphi sources.">
+    <meta property="og:image" content="https://seedocs.app/img/icon-256.png">
+    <meta name="theme-color" content="#f6f7fa" media="(prefers-color-scheme: light)">
+    <meta name="theme-color" content="#121318" media="(prefers-color-scheme: dark)">
+    <link rel="icon" href="favicon.ico" sizes="any">
+    <link rel="icon" href="img/icon-256.png" type="image/png">
+    <link rel="apple-touch-icon" href="img/apple-touch-icon.png">
+    <link rel="stylesheet" href="assets/site.css">
+</head>
+<body>
+<div class="wrap">
+    <header class="head">
+        <a class="brand" href="./"><img src="img/icon-256.png" alt=""><span class="wm">SeeDocs</span></a>
+        <nav class="nav">
+            <a href="#install">Download</a>
+            <a href="#command-line">Command line</a>
+            <a class="wide" href="#building">Sources</a>
+            <a class="wide" href="https://github.com/clafi-fw/cpp/tree/main/Tools/SeeDocs">GitHub</a>
+        </nav>
+    </header>
+
+    <div class="hero">
+        <div>
+            <h1>SeeDocs</h1>
+            <p class="lede">A code documentation tool. SeeDocs reads C++ and Delphi sources and shows what they declare as a reference - folders, modules, types and their members, each with the hint its comment gives.</p>
+        </div>
+        <div>
+            <div class="btns">
+                <a class="btn primary" data-asset="windows" href="https://github.com/clafi-fw/cpp/releases/download/SeeDocs-v0.1.1/SeeDocs-0.1.1-windows-x64.zip">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></svg>
+                    <span>Windows<small>10 and 11, x64 - zip</small></span>
+                </a>
+                <a class="btn secondary" data-asset="linux" href="https://github.com/clafi-fw/cpp/releases/download/SeeDocs-v0.1.1/SeeDocs-0.1.1-linux-x86_64.tar.gz">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></svg>
+                    <span>Linux<small>Wayland, x86-64 - tar.gz</small></span>
+                </a>
+            </div>
+            <p class="fine">Version <span data-version>0.1.1</span>, <span data-date>17 October 2026</span> - <a data-release-page href="https://github.com/clafi-fw/cpp/releases/tag/SeeDocs-v0.1.1">release notes</a> - zlib licence</p>
+        </div>
+    </div>
+
+    <div class="doc">
+        <nav class="toc" aria-label="On this page">
+            <a href="#reading">What it reads</a>
+            <a href="#hints">Hints and footnotes</a>
+            <a href="#projects">Projects</a>
+            <a href="#window">The window</a>
+            <a href="#command-line">Command line</a>
+            <a href="#install">Install</a>
+            <a href="#check">Check the download</a>
+            <a href="#building">Building</a>
+        </nav>
+
+        <main class="prose">
+            <h2 id="reading">What it reads</h2>
+            <p>SeeDocs reads a project's folders of sources as text, token by token, with the C++ and Pascal lexers of the ClaFi framework. A tree is read as it stands, with no compiler and no build setup.</p>
+            <p>It collects every public type - class, struct, union, enum, alias, concept - with its public and protected members, every free function and constant, and every module with its imports. A project reads its sources in one of two ways:</p>
+            <ul>
+                <li><b>Any C++ and Delphi</b> - for anyone's code. C++ module interfaces and headers and Delphi units are read for what they declare; implementation files are left out, and nothing is checked. A header stands as a module of its own, and a Delphi unit publishes its interface section.</li>
+                <li><b>ClaFi modules</b> - for sources written to the ClaFi declaration routine. The routine's macros are read as the properties and events they declare, and <code>SeeDocsCli check</code> holds the sources to the routine.</li>
+            </ul>
+
+            <h2 id="hints">Hints and footnotes</h2>
+            <p>A declaration's hint comes from its comment, by one of two sets of rules:</p>
+            <ul>
+                <li><b>Every recognizable comment</b> - <code>//</code>, <code>///</code>, <code>//!</code>, <code>/** */</code>, <code>/*! */</code>, a trailing <code>///&lt;</code>, and Delphi's <code>{ }</code> and <code>(* *)</code>. The hint is a <code>@brief</code> paragraph or an XML <code>&lt;summary&gt;</code>, else the comment's first sentence.</li>
+                <li><b>The strict ClaFi rules</b> - one <code>//</code> line, on the declaration's line or touching it from above. A declaration with no comment owes one, and its page says so.</li>
+            </ul>
+            <p>Notes longer than a hint go into the project's footnotes - Markdown files, one per subject. A page shows the section headed with its declaration's name, or under the strict rules the one the comment names with <code>See &lt;note&gt;#&lt;section&gt;</code>.</p>
+
+            <h2 id="projects">Projects</h2>
+            <p>A project is a folder of its own, kept wherever you choose:</p>
+            <div class="table">
+                <span><code>Project.cfg</code></span><span>the project's name, its folders of sources and its options</span>
+                <span><code>Surface.cfg</code></span><span>the database a scan writes</span>
+                <span><code>footnotes</code></span><span>the notes the pages show beside the hints</span>
+            </div>
+            <p>Both files are text in the <a href="https://clafi-fw.github.io/cpp/cfg.html">ClaFi configuration format</a>. The sources stay where they are, in any number of folders. A relative path is read from the project's folder, and a backslash parts folders on every desktop, so a project kept in a repository beside its sources reads the same on Windows and Linux. A tree may keep its project in a <code>.seedocs</code> folder of its own, and the tree's folder then stands for it.</p>
+            <p><strong>A hint edited on a page goes into its source file when the project's Edit hints option allows it.</strong> The edit is written directly, with no undo; a new project starts with the option off.</p>
+
+            <h2 id="window">The window</h2>
+            <ul>
+                <li>Several projects stay open at once, each a node of the tree, its pages in tabs.</li>
+                <li>A type's page shows its bases, its derived types, and its properties, events, methods and fields. A method's page holds every overload, each with its signature.</li>
+                <li>Ctrl+F searches names - folders, modules, types, functions, constants and members - in the shown project, or in every open one from the root page. The results page covers hints and footnotes as well, and the words are marked on the page shown.</li>
+                <li>Open in editor runs the command line set for the language in Settings - External editors, where <code>{file}</code> stands for the source file and <code>{line}</code> for the line in it.</li>
+            </ul>
+
+            <h2 id="command-line">Command line</h2>
+            <div class="table commands">
+                <span><code>SeeDocs [folder]</code></span><span>opens the project the folder stands for</span>
+                <span><code>SeeDocsCli scan [folder] [--out file] [--time]</code></span><span>writes the project's Surface.cfg</span>
+                <span><code>SeeDocsCli check [folder]</code></span><span>reports deviations, exit code 1 on errors</span>
+            </div>
+            <p>The folder is a project's own, or a tree with a <code>.seedocs</code> project in it; SeeDocsCli takes the working directory when it is left out. <code>--time</code> prints how long each step of the scan took. <code>check</code> prints one line per finding, <code>file:line: level: text</code>, in file and line order.</p>
+            <p>The release archives hold the window. SeeDocsCli is built from the sources - see <a href="#building">Building</a>.</p>
+
+            <h2 id="install">Install</h2>
+            <p>Each archive holds one folder with the program in it. Unpack it anywhere and run it.</p>
+            <h3>Windows</h3>
+            <p>Windows 10 or 11, 64-bit. Download <a data-asset="windows" href="https://github.com/clafi-fw/cpp/releases/download/SeeDocs-v0.1.1/SeeDocs-0.1.1-windows-x64.zip"><code data-asset-name="windows">SeeDocs-0.1.1-windows-x64.zip</code></a> <span class="size" data-asset-size="windows">- 1.5 MB</span>, unpack it and run <code>SeeDocs\SeeDocs.exe</code>.</p>
+            <p>Windows may stop the unsigned executable with <i>Windows protected your PC</i> - choose <b>More info</b>, then <b>Run anyway</b>.</p>
+            <h3>Linux</h3>
+            <p>A Wayland session, glibc 2.35 or newer, and an x86-64 processor with AVX2 and FMA. <a href="https://github.com/clafi-fw/cpp/blob/main/.github/release/Supported-Distros.md">Supported distributions</a> lists the desktops. Download <a data-asset="linux" href="https://github.com/clafi-fw/cpp/releases/download/SeeDocs-v0.1.1/SeeDocs-0.1.1-linux-x86_64.tar.gz"><code data-asset-name="linux">SeeDocs-0.1.1-linux-x86_64.tar.gz</code></a> <span class="size" data-asset-size="linux">- 2.8 MB</span>.</p>
+            <pre><code>tar -xzf <span data-asset-name="linux">SeeDocs-0.1.1-linux-x86_64.tar.gz</span>
+./SeeDocs/SeeDocs</code></pre>
+            <p>The checker in the archive names what a machine is missing to run it:</p>
+            <pre><code>./SeeDocs/clafi-check.sh ./SeeDocs/SeeDocs</code></pre>
+            <h3>Settings and updates</h3>
+            <p>SeeDocs keeps its settings, the open and recent projects among them, once <b>Keep settings on this PC</b> is ticked on the Settings page of the application menu. Its Information page checks GitHub for a newer release.</p>
+
+            <h2 id="check">Check the download</h2>
+            <p>GitHub computes a SHA-256 checksum of every file it publishes. For version <span data-version>0.1.1</span>:</p>
+            <div class="table">
+                <span data-asset-name="windows">SeeDocs-0.1.1-windows-x64.zip</span>
+                <span data-asset-digest="windows"><code>f895a1bbb62e22a821aaaaaf3f047784272d9bbb35060dc627d5733f2ab749bd</code></span>
+                <span data-asset-name="linux">SeeDocs-0.1.1-linux-x86_64.tar.gz</span>
+                <span data-asset-digest="linux"><code>bbd0cf7843f8317e16c866553e643b3c9ebeb0aeb28cd081ce1a8c7b3c396086</code></span>
+            </div>
+            <p>Compare it with the checksum of the archive you downloaded, before unpacking:</p>
+            <span class="label">Windows, in PowerShell</span>
+            <pre><code>Get-FileHash <span data-asset-name="windows">SeeDocs-0.1.1-windows-x64.zip</span></code></pre>
+            <span class="label">Linux</span>
+            <pre><code>sha256sum <span data-asset-name="linux">SeeDocs-0.1.1-linux-x86_64.tar.gz</span></code></pre>
+
+            <h2 id="building">Building</h2>
+            <p>SeeDocs is open source under the zlib licence. Its code is in the ClaFi repository, in <a href="https://github.com/clafi-fw/cpp/tree/main/Tools/SeeDocs">Tools/SeeDocs</a>, and its README is the full reference of the scanner and the database.</p>
+            <p>On Windows, <code>SeeDocs.sln</code> builds SeeDocs and SeeDocsCli with Visual Studio. On Linux, the CMake target <code>SeeDocs</code> builds the window for Wayland, and <code>SeeDocsCli</code> builds the scanner with no platform layer:</p>
+            <pre><code>cmake -S . -B build -G Ninja -DCLAFI_PLATFORM=none \
+      -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_CXX_FLAGS=-stdlib=libc++ \
+      -DCMAKE_BUILD_TYPE=Release
+cmake --build build --target SeeDocsCli
+./build/SeeDocsCli check Source</code></pre>
+            <p>GitHub builds every release from the tree - the recipe is <a href="https://github.com/clafi-fw/cpp/blob/main/.github/workflows/release.yml">.github/workflows/release.yml</a>.</p>
+        </main>
+    </div>
+</div>
+
+<footer class="foot">
+    <div class="wrap">
+        <span>SeeDocs <span data-version>0.1.1</span></span>
+        <span class="grow"></span>
+        <span>Built with <a href="https://github.com/clafi-fw/cpp">ClaFi - Clarity First the Framework</a></span>
+        <a href="https://github.com/clafi-fw/cpp/blob/main/LICENSE">zlib licence</a>
+        <span>&copy; 2026 Oleg Zhukov</span>
+    </div>
+</footer>
+
+<script src="assets/site.js"></script>
+</body>
+</html>
